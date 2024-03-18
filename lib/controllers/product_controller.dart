@@ -3,22 +3,29 @@ import 'package:crud_flutter/providers/product/product_provider.dart';
 import 'package:crud_flutter/repositories/product/product_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProductController {
+enum ProductStatus { initial, loading, success, error }
+
+class ProductController extends StateNotifier<ProductStatus> {
   final ProviderRef ref;
   final ProductRepository productRepository;
 
-  ProductController({required this.ref, required this.productRepository});
+  ProductController(this.ref, this.productRepository)
+      : super(ProductStatus.initial);
 
-  Future<String> addProduct(ProductModel productModel) async {
-    final response = await productRepository.addProduct(productModel);
-    if (response == 'success') {
-      // Refresh provider jika produk berhasil ditambahkan
-      ref.refresh(productRepositoryProvider);
-      // Kembalikan 'success' jika produk berhasil ditambahkan
-      return 'success';
-    } else {
-      // Kembalikan respon dari repository jika gagal
+  Future<String> addProduct(ProductModel product) async {
+    try {
+      state = ProductStatus.loading;
+      final response = await productRepository.addProduct(product);
+      if (response == 'success') {
+        state = ProductStatus.success;
+        ref.refresh(dataProductProvider); // Refresh data product
+      } else {
+        state = ProductStatus.error;
+      }
       return response;
+    } catch (e) {
+      state = ProductStatus.error;
+      return 'error';
     }
   }
 }
