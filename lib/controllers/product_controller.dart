@@ -28,4 +28,21 @@ class ProductController extends StateNotifier<ProductStatus> {
       return 'error';
     }
   }
+
+  Future<String> deleteProduct(String id) async {
+    try {
+      state = ProductStatus.loading;
+      final response = await productRepository.deleteProduct(id);
+      if (response == 'success') {
+        state = ProductStatus.success;
+        ref.refresh(dataProductProvider); // Refresh data product
+      } else {
+        state = ProductStatus.error;
+      }
+      return response;
+    } catch (e) {
+      state = ProductStatus.error;
+      return 'error';
+    }
+  }
 }

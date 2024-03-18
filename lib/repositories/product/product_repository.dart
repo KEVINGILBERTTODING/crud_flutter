@@ -37,4 +37,25 @@ class ProductRepository {
       throw Exception('Error: $e');
     }
   }
+
+  Future<String> deleteProduct(String id) async {
+    try {
+      var url = Uri.parse(ApiService.baseUrl + '/$id');
+      var response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return 'success';
+      } else {
+        print('gagal');
+
+        throw Exception('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print(e.toString());
+      throw Exception('Error: $e');
+    }
+  }
 }

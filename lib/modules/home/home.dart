@@ -29,11 +29,46 @@ class HomeScreen extends ConsumerWidget {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          content: CircularProgressIndicator(),
-        ),
+            content: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [Text('Data')],
+          ),
+        )),
       );
 
       final response = await controller.addProduct(productModel);
+
+      Navigator.pop(context); // Tutup dialog saat selesai
+
+      // Menampilkan pesan sukses/gagal
+      if (response == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Berhasil menambahkan data')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menambahkan data')),
+        );
+      }
+    }
+
+    void deleteProduct(WidgetRef ref, String id) async {
+      final controller = ref.read(productController);
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+            content: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [Text('Data')],
+          ),
+        )),
+      );
+
+      final response = await controller.deleteProduct(id);
 
       Navigator.pop(context); // Tutup dialog saat selesai
 
@@ -81,6 +116,12 @@ class HomeScreen extends ConsumerWidget {
                     final item = data[index];
                     return Card(
                       child: ListTile(
+                        onTap: () {
+                          String? productId = item.id;
+                          if (productId != null) {
+                            deleteProduct(ref, productId);
+                          }
+                        },
                         title: Text(item.productName),
                         subtitle: Text('Rp. ${item.price?.toString()}'),
                         trailing: Icon(
@@ -103,74 +144,74 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (BuildContext context) {
-              return SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Input data baru',
-                        style: TextStyle(fontFamily: 'popbold', fontSize: 15),
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Nama produk tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                        autocorrect: true,
-                        controller: _productNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Nama Produk',
-                          border: OutlineInputBorder(),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      TextField(
-                        controller: _productPriceController,
-                        decoration: InputDecoration(
-                          labelText: 'Harga Produk',
-                          border: OutlineInputBorder(),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            addProduct(ref);
-                          },
-                          child: Text('Simpan'),
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.black),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     showModalBottomSheet(
+      //       context: context,
+      //       isScrollControlled: true,
+      //       builder: (BuildContext context) {
+      //         return SingleChildScrollView(
+      //           padding: EdgeInsets.only(
+      //             bottom: MediaQuery.of(context).viewInsets.bottom,
+      //           ),
+      //           child: Container(
+      //             padding: EdgeInsets.all(16),
+      //             child: Column(
+      //               mainAxisSize: MainAxisSize.min,
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: [
+      //                 Text(
+      //                   'Input data baru',
+      //                   style: TextStyle(fontFamily: 'popbold', fontSize: 15),
+      //                 ),
+      //                 SizedBox(height: 20),
+      //                 TextFormField(
+      //                   validator: (value) {
+      //                     if (value == null || value.isEmpty) {
+      //                       return 'Nama produk tidak boleh kosong';
+      //                     }
+      //                     return null;
+      //                   },
+      //                   autocorrect: true,
+      //                   controller: _productNameController,
+      //                   decoration: InputDecoration(
+      //                     labelText: 'Nama Produk',
+      //                     border: OutlineInputBorder(),
+      //                     floatingLabelBehavior: FloatingLabelBehavior.always,
+      //                   ),
+      //                 ),
+      //                 SizedBox(height: 20),
+      //                 TextField(
+      //                   controller: _productPriceController,
+      //                   decoration: InputDecoration(
+      //                     labelText: 'Harga Produk',
+      //                     border: OutlineInputBorder(),
+      //                     floatingLabelBehavior: FloatingLabelBehavior.always,
+      //                   ),
+      //                 ),
+      //                 SizedBox(height: 20),
+      //                 Align(
+      //                   alignment: Alignment.centerRight,
+      //                   child: TextButton(
+      //                     onPressed: () {
+      //                       addProduct(ref);
+      //                     },
+      //                     child: Text('Simpan'),
+      //                     style: ButtonStyle(
+      //                       backgroundColor:
+      //                           MaterialStateProperty.all(Colors.black),
+      //                     ),
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //         );
+      //       },
+      //     );
+      //   },
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
