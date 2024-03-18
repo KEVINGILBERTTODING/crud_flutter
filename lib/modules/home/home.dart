@@ -1,22 +1,37 @@
-import 'package:crud_flutter/modules/products/views/list_products.dart';
+import 'package:crud_flutter/controllers/product_controller.dart';
+import 'package:crud_flutter/modules/products/model/product.dart';
 import 'package:crud_flutter/providers/auth/auth_provider.dart';
+import 'package:crud_flutter/providers/product/product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends ConsumerWidget {
+  // const HomeScreen({Key? key}) : super(key: key);
+
+  final productController = Provider((ref) {
+    final entryRepository = ref.watch(productRepositoryProvider);
+    return ProductController(ref: ref, productRepository: entryRepository);
+  });
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    TextEditingController _productNameController = TextEditingController();
+    TextEditingController _productPriceController = TextEditingController();
+    final asyncDataProduct = ref.watch(dataProductProvider);
 
-class _HomeScreenState extends State<HomeScreen> {
-  TextEditingController _productNameController = TextEditingController();
-  TextEditingController _productPriceController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+    void addProduct(WidgetRef reff) {
+      ProductModel dataProduct = ProductModel(
+          productName: _productNameController.text,
+          price: int.parse(_productPriceController.text),
+          tglMasuk: "2020-02-02");
+      final asyncProduct = ref.read(productController).addProduct(dataProduct);
+      if (asyncProduct == 'success') {
+        print('success');
+      } else {
+        print('gagal');
+      }
+    }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -41,8 +56,28 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }),
             Expanded(
-              child: const ListProducts(),
-            )
+                child: asyncDataProduct.when(
+                    data: (data) => ListView.builder(
+                        padding: EdgeInsets.all(16),
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          final item = data[index];
+                          return Card(
+                            child: ListTile(
+                              title: Text(item.productName),
+                              subtitle: Text('Rp. ${item.price?.toString()}'),
+                              trailing: Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
+                            ),
+                          );
+                        }),
+                    error: (error, stracTrace) {
+                      ScaffoldMessenger(child: SnackBar(content: Text('')));
+                      return Text('Error: $error');
+                    },
+                    loading: () => CircularProgressIndicator()))
           ],
         ),
       ),
@@ -102,20 +137,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 20,
                           ),
                           Align(
+                            alignment: Alignment.centerRight,
                             child: TextButton(
                                 onPressed: () {
-                                  String unm = _productNameController.text;
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                    behavior: SnackBarBehavior.floating,
-                                    content: Text(unm),
-                                    duration: Duration(seconds: 2),
-                                  ));
+                                  addProduct(ref);
                                 },
                                 child: Text('Simpan'),
                                 style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
-                                        Colors.amber))),
+                                        Colors.black))),
                           )
 
                           // Tambahkan widget lain yang diperlukan di sini

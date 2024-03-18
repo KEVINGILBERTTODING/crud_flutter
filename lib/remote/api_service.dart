@@ -1,4 +1,4 @@
 class ApiService {
   static const baseUrl =
-      'https://crudcrud.com/api/92f7ca18793d4c009cc2ee4d0c95018b/product';
+      'https://crudcrud.com/api/f822b53d5cc849d5bcdc237e75303bc3/product';
 }

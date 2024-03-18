@@ -29,7 +29,7 @@ class ListProducts extends ConsumerWidget {
             }),
         error: (error, stackTrace) {
           // Mencetak pesan kesalahan
-          print('error: $stackTrace');
+          print('error: $error');
           return Text('Error: $error'); // Menampilkan pesan kesalahan di UI
         },
         loading: () => CircularProgressIndicator());

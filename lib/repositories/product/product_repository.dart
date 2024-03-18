@@ -15,4 +15,26 @@ class ProductRepository {
       throw Exception('failed get product');
     }
   }
+
+  Future<String> addProduct(ProductModel productData) async {
+    try {
+      var url = Uri.parse(ApiService.baseUrl);
+      var response = await http.post(
+        url,
+        body: jsonEncode(productData),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 201) {
+        return 'success';
+      } else {
+        print('gagal');
+
+        throw Exception('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error');
+      throw Exception('Error: $e');
+    }
+  }
 }
