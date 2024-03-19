@@ -1,9 +1,7 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:crud_flutter/providers/auth/auth_provider.dart';
+import 'package:crud_flutter/repositories/auth/auth_repository.dart';
 import 'package:crud_flutter/routes/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,13 +14,15 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _usernameContoller = TextEditingController();
   String? _usrnameErr;
+  final _authRepository = AuthRepository();
 
   void _validateInput() {
     setState(() {
       if (_usernameContoller.text.isEmpty) {
         _usrnameErr = 'Username tidak boleh kosong';
+      } else {
+        _usrnameErr = null; // Reset error message if username is not empty
       }
-      return;
     });
   }
 
@@ -89,33 +89,31 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(
                             height: 20,
                           ),
-                          Consumer(builder: (context, ref, child) {
-                            final authRepository =
-                                ref.watch(authRepositoryProvider);
-                            return Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                  onPressed: () {
-                                    _validateInput();
-                                    authRepository
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                                onPressed: () async {
+                                  _validateInput();
+                                  if (_usrnameErr == null) {
+                                    _authRepository
                                         .saveUserInfo(_usernameContoller.text);
                                     Navigator.pushNamed(
                                         context, AppRoutes.homeScreen);
-                                  },
-                                  style: ButtonStyle(
-                                      fixedSize: MaterialStateProperty.all(
-                                          Size(double.infinity, 50)),
-                                      backgroundColor:
-                                          MaterialStateColor.resolveWith(
-                                              (states) => Colors.black)),
-                                  child: Text(
-                                    'Masuk sekarang',
-                                    style: TextStyle(
-                                        fontFamily: 'popmed',
-                                        color: Colors.white),
-                                  )),
-                            );
-                          }),
+                                  }
+                                },
+                                style: ButtonStyle(
+                                    fixedSize: MaterialStateProperty.all(
+                                        Size(double.infinity, 50)),
+                                    backgroundColor:
+                                        MaterialStateColor.resolveWith(
+                                            (states) => Colors.black)),
+                                child: Text(
+                                  'Masuk sekarang',
+                                  style: TextStyle(
+                                      fontFamily: 'popmed',
+                                      color: Colors.white),
+                                )),
+                          )
                         ],
                       ),
                     ),
