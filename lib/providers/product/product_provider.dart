@@ -10,3 +10,9 @@ final dataProductProvider = FutureProvider<List<ProductModel>>((ref) async {
   final productRepository = ref.watch(productRepositoryProvider);
   return productRepository.getProduct();
 });
+
+final detailProductProvider =
+    FutureProvider.family.autoDispose<ProductModel, String?>((ref, id) async {
+  final productRepositroy = ref.watch(productRepositoryProvider);
+  return productRepositroy.detailProduct(id);
+});

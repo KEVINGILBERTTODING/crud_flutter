@@ -45,4 +45,21 @@ class ProductController extends StateNotifier<ProductStatus> {
       return 'error';
     }
   }
+
+  Future<String> editProduct(ProductModel product, String id) async {
+    try {
+      state = ProductStatus.loading;
+      final response = await productRepository.editProduct(product, id);
+      if (response == 'success') {
+        state = ProductStatus.success;
+        ref.refresh(dataProductProvider); // Refresh data product
+      } else {
+        state = ProductStatus.error;
+      }
+      return response;
+    } catch (e) {
+      state = ProductStatus.error;
+      return 'error';
+    }
+  }
 }

@@ -38,6 +38,20 @@ class ProductRepository {
     }
   }
 
+  Future<ProductModel> detailProduct(String? id) async {
+    final responseProduct =
+        await http.get(Uri.parse(ApiService.baseUrl + "/$id"));
+    if (responseProduct.statusCode == 200) {
+      final Map<String, dynamic> responseData =
+          jsonDecode(responseProduct.body);
+      final ProductModel dataProduct = ProductModel.fromJson(
+          responseData); // Ubah Map menjadi objek ProductModel
+      return dataProduct;
+    } else {
+      throw Exception('Failed to get product');
+    }
+  }
+
   Future<String> deleteProduct(String id) async {
     try {
       var url = Uri.parse(ApiService.baseUrl + '/$id');
@@ -55,6 +69,28 @@ class ProductRepository {
       }
     } catch (e) {
       print(e.toString());
+      throw Exception('Error: $e');
+    }
+  }
+
+  Future<String> editProduct(ProductModel productData, String id) async {
+    try {
+      var url = Uri.parse(ApiService.baseUrl + '/$id');
+      var response = await http.put(
+        url,
+        body: jsonEncode(productData),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return 'success';
+      } else {
+        print('gagal');
+
+        throw Exception('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error');
       throw Exception('Error: $e');
     }
   }

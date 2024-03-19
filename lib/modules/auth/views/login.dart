@@ -92,26 +92,29 @@ class _LoginScreenState extends State<LoginScreen> {
                           Consumer(builder: (context, ref, child) {
                             final authRepository =
                                 ref.watch(authRepositoryProvider);
-                            return TextButton(
-                                onPressed: () {
-                                  _validateInput();
-                                  authRepository
-                                      .saveUserInfo(_usernameContoller.text);
-                                  Navigator.pushNamed(
-                                      context, AppRoutes.homeScreen);
-                                },
-                                style: ButtonStyle(
-                                    fixedSize: MaterialStateProperty.all(
-                                        Size(double.infinity, 50)),
-                                    backgroundColor:
-                                        MaterialStateColor.resolveWith(
-                                            (states) => Colors.black)),
-                                child: Text(
-                                  'Masuk sekarang',
-                                  style: TextStyle(
-                                      fontFamily: 'popmed',
-                                      color: Colors.white),
-                                ));
+                            return Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                  onPressed: () {
+                                    _validateInput();
+                                    authRepository
+                                        .saveUserInfo(_usernameContoller.text);
+                                    Navigator.pushNamed(
+                                        context, AppRoutes.homeScreen);
+                                  },
+                                  style: ButtonStyle(
+                                      fixedSize: MaterialStateProperty.all(
+                                          Size(double.infinity, 50)),
+                                      backgroundColor:
+                                          MaterialStateColor.resolveWith(
+                                              (states) => Colors.black)),
+                                  child: Text(
+                                    'Masuk sekarang',
+                                    style: TextStyle(
+                                        fontFamily: 'popmed',
+                                        color: Colors.white),
+                                  )),
+                            );
                           }),
                         ],
                       ),
